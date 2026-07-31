@@ -6,12 +6,14 @@ const submitBtn = document.getElementById('submit-btn');
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
 
+  const nameInput = document.getElementById('user-name');
   const messageInput = document.getElementById('user-message');
   const fileInput = document.getElementById('user-image');
+
+  const senderName = nameInput.value.trim() || "";
   const message = messageInput.value.trim();
   const file = fileInput.files[0];
 
-  // ตรวจสอบว่าผู้ใช้กรอกข้อความหรือเลือกรูปภาพอย่างน้อย 1 อย่างหรือไม่
   if (!message && !file) {
     alert("กรุณาพิมพ์ข้อความ หรือเลือกรูปภาพอย่างน้อย 1 อย่างครับ");
     return;
@@ -23,7 +25,6 @@ form.addEventListener('submit', async (e) => {
   let imageUrl = "";
 
   try {
-    // 1. ถ้ามีการเลือกรูปภาพ ให้ทำการอัปโหลดไปยัง Firebase Storage
     if (file) {
       const fileName = `uploads/${Date.now()}_${file.name}`;
       const storageRef = ref(storage, fileName);
@@ -31,8 +32,8 @@ form.addEventListener('submit', async (e) => {
       imageUrl = await getDownloadURL(storageRef);
     }
 
-    // 2. บันทึกข้อมูล (ข้อความ และ/หรือ ลิงก์รูปภาพ) ลงใน Firestore Database
     await addDoc(collection(db, "wishes"), {
+      senderName: senderName,
       message: message,
       imageUrl: imageUrl,
       createdAt: new Date()
@@ -42,7 +43,7 @@ form.addEventListener('submit', async (e) => {
     form.reset();
   } catch (error) {
     console.error("Error uploading data:", error);
-    alert("เกิดข้อผิดพลาดในการบันทึกข้อมูล (กรุณาเช็กสิทธิ์ Firebase Rules / CORS)");
+    alert("เกิดข้อผิดพลาดในการบันทึกข้อมูล");
   } finally {
     submitBtn.disabled = false;
     submitBtn.innerText = "ส่งข้อมูล";
