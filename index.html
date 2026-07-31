@@ -11,7 +11,7 @@
     .form-box { background: rgba(255,255,255,0.08); backdrop-filter: blur(10px); padding: 30px; border-radius: 16px; width: 100%; max-width: 420px; border: 1px solid rgba(243, 209, 99, 0.4); box-shadow: 0 0 20px rgba(0,0,0,0.5); }
     h2 { color: #f3d163; text-align: center; margin-top: 0; margin-bottom: 20px; font-size: 1.5rem; }
     label { font-size: 0.9rem; color: #ccc; }
-    textarea, input[type="file"], button { width: 100%; margin-top: 8px; margin-bottom: 16px; padding: 12px; border-radius: 8px; border: 1px solid #444; background: rgba(0,0,0,0.5); color: #fff; font-size: 0.95rem; }
+    input[type="text"], textarea, input[type="file"], button { width: 100%; margin-top: 8px; margin-bottom: 16px; padding: 12px; border-radius: 8px; border: 1px solid #444; background: rgba(0,0,0,0.5); color: #fff; font-size: 0.95rem; }
     textarea { resize: vertical; }
     button { background: #f3d163; font-weight: 600; cursor: pointer; color: #000; border: none; margin-top: 10px; font-size: 1rem; transition: 0.2s; }
     button:hover { background: #fff; }
@@ -22,7 +22,10 @@
   <div class="form-box">
     <h2>ร่วมฝากข้อความ & รูปภาพ</h2>
     <form id="upload-form">
-      <label for="user-message">ข้อความอวยพร / คำพูดที่อยากฝาก (ไม่บังคับ):</label>
+      <label for="user-name">ชื่อผู้ส่ง (ไม่บังคับ):</label>
+      <input type="text" id="user-name" placeholder="ใส่ชื่อของคุณ...">
+
+      <label for="user-message">ข้อความอวยพร (ไม่บังคับ):</label>
       <textarea id="user-message" rows="4" placeholder="พิมพ์ข้อความตรงนี้..."></textarea>
       
       <label for="user-image">รูปภาพ (ไม่บังคับ):</label>
@@ -32,7 +35,6 @@
     </form>
   </div>
 
-  <!-- เรียกใช้ไฟล์ JavaScript แยก (ต้องมี type="module") -->
   <script type="module" src="./upload.js"></script>
 </body>
 </html>
