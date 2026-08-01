@@ -117,8 +117,8 @@ form.addEventListener('submit', async (e) => {
     alert("ส่งข้อมูลเรียบร้อยแล้ว!");
     form.reset();
     
-    // เด้งไปแท็บดูรายการทันที ซึ่งโพสต์ใหม่ล่าสุดจะขึ้นอยู่อันแรกสุด
-    tabViewBtn.click();
+    // เปลี่ยนหน้าไปยัง URL ที่ต้องการหลังจากกดตกลง
+    window.location.href = "https://nincxndy.github.io/NY2027/";
   } catch (error) {
     console.error("Error uploading data:", error);
     alert("เกิดข้อผิดพลาด: " + error.message);
