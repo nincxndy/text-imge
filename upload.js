@@ -107,7 +107,7 @@ form.addEventListener('submit', async (e) => {
       }
     }
 
-    await addDoc(collection(db, "wishes"), {
+   await addDoc(collection(db, "wishes"), {
       senderName: senderName,
       message: message,
       imageUrl: imageUrl,
