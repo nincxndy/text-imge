@@ -1,11 +1,72 @@
-import { db, collection, addDoc } from './firebase-config.js';
+import { db, collection, addDoc, onSnapshot, query, orderBy } from './firebase-config.js';
 
 const form = document.getElementById('upload-form');
 const submitBtn = document.getElementById('submit-btn');
 
-// ใส่ Imgbb API Key ของคุณเรียบร้อยแล้ว
 const IMGBB_API_KEY = "628e1113e4408b61ff032fbc46990b58"; 
 
+// Tab Control Elements
+const tabUploadBtn = document.getElementById('tab-upload-btn');
+const tabViewBtn = document.getElementById('tab-view-btn');
+const uploadTab = document.getElementById('upload-tab');
+const viewTab = document.getElementById('view-tab');
+const wishesList = document.getElementById('wishes-list');
+
+// สลับแท็บ
+tabUploadBtn.addEventListener('click', () => {
+  tabUploadBtn.classList.add('active');
+  tabViewBtn.classList.remove('active');
+  uploadTab.classList.add('active');
+  viewTab.classList.remove('active');
+});
+
+tabViewBtn.addEventListener('click', () => {
+  tabViewBtn.classList.add('active');
+  tabUploadBtn.classList.remove('active');
+  viewTab.classList.add('active');
+  uploadTab.classList.remove('active');
+});
+
+// ดึงข้อมูล Real-time + เรียงลำดับจากใหม่ล่าสุดไปเก่าสุด
+function listenToWishes() {
+  const wishesRef = collection(db, "wishes");
+  // ใส่ query เรียงลำดับcreatedAt แบบจัดจากมากไปน้อย (desc = ใหม่สุดขึ้นก่อน)
+  const q = query(wishesRef, orderBy("createdAt", "desc"));
+
+  onSnapshot(q, (snapshot) => {
+    wishesList.innerHTML = "";
+
+    if (snapshot.empty) {
+      wishesList.innerHTML = '<p style="text-align:center; color:#aaa;">ยังไม่มีข้อความอวยพรในขณะนี้</p>';
+      return;
+    }
+
+    snapshot.forEach((doc) => {
+      const item = doc.data();
+      const card = document.createElement('div');
+      card.className = 'wish-item';
+
+      const sender = item.senderName || "ไม่ระบุชื่อ";
+      const message = item.message || "";
+      const imageUrl = item.imageUrl || "";
+
+      card.innerHTML = `
+        <div class="sender">👤 ${sender}</div>
+        ${message ? `<div class="msg">${message}</div>` : ''}
+        ${imageUrl ? `<img src="${imageUrl}" alt="ภาพอวยพรจาก ${sender}">` : ''}
+      `;
+
+      wishesList.appendChild(card);
+    });
+  }, (error) => {
+    console.error("Firebase Snapshot Error:", error);
+    wishesList.innerHTML = '<p style="text-align:center; color:#ff6b6b;">โหลดข้อมูลไม่สำเร็จ</p>';
+  });
+}
+
+listenToWishes();
+
+// จัดการการบันทึกข้อมูล
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
 
@@ -28,7 +89,6 @@ form.addEventListener('submit', async (e) => {
   let imageUrl = "";
 
   try {
-    // 1. ถ้ามีไฟล์รูปภาพ ให้อัปโหลดไปที่ Imgbb
     if (file) {
       const formData = new FormData();
       formData.append("image", file);
@@ -47,7 +107,6 @@ form.addEventListener('submit', async (e) => {
       }
     }
 
-    // 2. บันทึกข้อมูลเข้า Firebase Firestore
     await addDoc(collection(db, "wishes"), {
       senderName: senderName,
       message: message,
@@ -57,6 +116,9 @@ form.addEventListener('submit', async (e) => {
 
     alert("ส่งข้อมูลเรียบร้อยแล้ว!");
     form.reset();
+    
+    // เด้งไปแท็บดูรายการทันที ซึ่งโพสต์ใหม่ล่าสุดจะขึ้นอยู่อันแรกสุด
+    tabViewBtn.click();
   } catch (error) {
     console.error("Error uploading data:", error);
     alert("เกิดข้อผิดพลาด: " + error.message);
