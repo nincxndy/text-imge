@@ -59,7 +59,7 @@ function listenToWishes() {
       const card = document.createElement('div');
       card.className = 'wish-item';
 
-      const sender = item.senderName ||;
+      const sender = item.senderName ||"";
       const message = item.message || "";
       const mediaUrl = item.mediaUrl || item.imageUrl || ""; 
       const mediaType = item.mediaType || "image";
