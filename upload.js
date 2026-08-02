@@ -59,7 +59,7 @@ function listenToWishes() {
       const card = document.createElement('div');
       card.className = 'wish-item';
 
-      const sender = item.senderName || "ไม่ระบุชื่อ";
+      const sender = item.senderName || "";
       const message = item.message || "";
       const imageUrl = item.imageUrl || "";
 
@@ -88,7 +88,7 @@ if (form) {
     const messageInput = document.getElementById('user-message');
     const fileInput = document.getElementById('user-image');
 
-    const senderName = nameInput.value.trim() || "ไม่ระบุชื่อ";
+    const senderName = nameInput.value.trim() || "";
     const message = messageInput.value.trim();
     const file = fileInput ? fileInput.files[0] : null;
 
