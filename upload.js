@@ -4,7 +4,6 @@ const form = document.getElementById('upload-form');
 const submitBtn = document.getElementById('submit-btn');
 const cdBtn = document.getElementById('cd-btn');
 
-// ตั้งค่า Cloudinary & Redirect URL
 const CLOUDINARY_CLOUD_NAME = "op4q4mqx"; 
 const CLOUDINARY_PRESET = "ml_default"; 
 const COUNTDOWN_URL = "https://nincxndy.github.io/NY2027/";
@@ -16,7 +15,6 @@ if (cdBtn) {
   });
 }
 
-// สลับแท็บ หน้าอัปโหลด / ดูข้อความ
 const tabUploadBtn = document.getElementById('tab-upload-btn');
 const tabViewBtn = document.getElementById('tab-view-btn');
 const uploadTab = document.getElementById('upload-tab');
@@ -39,7 +37,6 @@ if (tabUploadBtn && tabViewBtn) {
   });
 }
 
-// โหลดข้อความมาพรีวิวในแท็บที่ 2
 function listenToWishes() {
   if (!wishesList) return;
   
@@ -59,7 +56,7 @@ function listenToWishes() {
       const card = document.createElement('div');
       card.className = 'wish-item';
 
-      const sender = item.senderName || "";
+      const sender = item.senderName ? item.senderName.trim() : "";
       const message = item.message || "";
       const mediaUrl = item.mediaUrl || item.imageUrl || ""; 
       const mediaType = item.mediaType || "image";
@@ -69,13 +66,16 @@ function listenToWishes() {
         if (mediaType === "video") {
           mediaHtml = `<video src="${mediaUrl}" controls playsinline></video>`;
         } else {
-          mediaHtml = `<img src="${mediaUrl}" alt="ภาพอวยพรจาก ${sender}">`;
+          mediaHtml = `<img src="${mediaUrl}" alt="ภาพอวยพร">`;
         }
       }
 
+      const senderHtml = sender ? `<div class="sender">${sender}</div>` : "";
+      const messageHtml = message ? `<div class="msg">${message}</div>` : "";
+
       card.innerHTML = `
-        <div class="sender">👤 ${sender}</div>
-        ${message ? `<div class="msg">${message}</div>` : ''}
+        ${senderHtml}
+        ${messageHtml}
         ${mediaHtml}
       `;
 
@@ -89,7 +89,6 @@ function listenToWishes() {
 
 listenToWishes();
 
-// ระบบอัปโหลดข้อมูล
 if (form) {
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -98,17 +97,19 @@ if (form) {
     const messageInput = document.getElementById('user-message');
     const mediaInput = document.getElementById('user-media');
 
-    const senderName = nameInput.value.trim() || "ไม่ระบุชื่อ";
-    const message = messageInput.value.trim();
-    const file = mediaInput ? mediaInput.files[0] : null;
+    const senderName = nameInput ? nameInput.value.trim() : "";
+    const message = messageInput ? messageInput.value.trim() : "";
+    const file = mediaInput && mediaInput.files ? mediaInput.files[0] : null;
 
     if (!message && !file) {
       alert("กรุณาพิมพ์ข้อความ หรืออัปโหลดรูปภาพ/วิดีโอ อย่างน้อย 1 อย่างครับ");
       return;
     }
 
-    submitBtn.disabled = true;
-    submitBtn.innerText = "กำลังอัปโหลดและบันทึกข้อมูล...";
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.innerText = "กำลังอัปโหลดและบันทึกข้อมูล...";
+    }
 
     let mediaUrl = "";
     let mediaType = "";
@@ -125,7 +126,6 @@ if (form) {
         formData.append("file", file);
         formData.append("upload_preset", CLOUDINARY_PRESET);
 
-        // ส่งไฟล์ขึ้น Cloudinary
         const uploadRes = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/auto/upload`, {
           method: "POST",
           body: formData
@@ -140,7 +140,6 @@ if (form) {
         mediaUrl = uploadData.secure_url;
       }
 
-      // บันทึกลง Firestore
       await addDoc(collection(db, "wishes"), {
         senderName: senderName,
         message: message,
@@ -157,8 +156,10 @@ if (form) {
       console.error("Error uploading data:", error);
       alert("เกิดข้อผิดพลาด: " + error.message);
     } finally {
-      submitBtn.disabled = false;
-      submitBtn.innerText = "ส่งข้อมูล";
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.innerText = "ส่งข้อมูล";
+      }
     }
   });
 }
