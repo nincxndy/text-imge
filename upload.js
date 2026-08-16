@@ -15,10 +15,7 @@ if (cdBtn) {
     window.location.href = COUNTDOWN_URL;
   });
 }
-
-// ---------------------------------------------------------
 // ระบบสลับแท็บ
-// ---------------------------------------------------------
 document.addEventListener('DOMContentLoaded', () => {
   const tabMsgBtn = document.getElementById('tab-msg-btn');
   const tabSongBtn = document.getElementById('tab-song-btn');
@@ -90,10 +87,7 @@ function extractSongNameFromUrl(url) {
     return "เพลงไม่มีชื่อ";
   }
 }
-
-// ---------------------------------------------------------
 // 1. ส่งฟอร์มข้อความ/รูปภาพ/วิดีโอ
-// ---------------------------------------------------------
 if (msgForm) {
   msgForm.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -150,10 +144,7 @@ if (msgForm) {
     }
   });
 }
-
-// ---------------------------------------------------------
 // 2. ส่งฟอร์มเฉพาะเพลง
-// ---------------------------------------------------------
 if (songForm) {
   songForm.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -193,16 +184,13 @@ if (songForm) {
     }
   });
 }
-
-// ---------------------------------------------------------
 // 3. ดึงข้อมูลแบบ Realtime จาก Firebase
-// ---------------------------------------------------------
 function listenToFirebaseData() {
   const wishesList = document.getElementById('wishes-list');
   const songsList = document.getElementById('songs-list');
 
   const wishesRef = collection(db, "wishes");
-  const q = query(wishesRef, orderBy("createdAt", "asc"));
+  const q = query(wishesRef, orderBy("createdAt", "desc"));
 
   onSnapshot(q, (snapshot) => {
     if (wishesList) wishesList.innerHTML = "";
