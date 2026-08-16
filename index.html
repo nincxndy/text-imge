@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ฝากข้อความ & รูปภาพ/วิดีโอ</title>
+  <title>ฝากข้อความ รูปภาพ และ เพลง</title>
   <link rel="icon" type="image/jpeg" href="img/icon1.jpg">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <style>
@@ -21,10 +21,11 @@
       box-shadow: 0 0 20px rgba(0,0,0,0.5); 
     }
 
-    .tab-container { display: flex; gap: 10px; margin-bottom: 20px; }
+    /* แถบเมนูแท็บ */
+    .tab-container { display: flex; gap: 6px; margin-bottom: 20px; flex-wrap: wrap; }
     .tab-btn {
-      flex: 1; padding: 10px; background: rgba(0, 0, 0, 0.4); color: #888;
-      border: 1px solid #444; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.3s ease;
+      flex: 1 1 45%; padding: 10px 5px; background: rgba(0, 0, 0, 0.4); color: #888;
+      border: 1px solid #444; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; font-size: 0.82rem; text-align: center;
     }
     .tab-btn.active { background: #f3d163; color: #000; border-color: #f3d163; }
 
@@ -33,23 +34,39 @@
 
     label { font-size: 0.9rem; color: #ccc; }
     input[type="text"], input[type="file"], textarea, button { 
-      width: 100%; margin-top: 8px; margin-bottom: 16px; padding: 12px; 
+      width: 100%; margin-top: 6px; margin-bottom: 14px; padding: 12px; 
       border-radius: 8px; border: 1px solid #444; background: rgba(0,0,0,0.5); color: #fff; font-size: 0.95rem; 
     }
     textarea { resize: vertical; }
     
-    #submit-btn { background: #f3d163; font-weight: 600; cursor: pointer; color: #000; border: none; margin-top: 10px; font-size: 1rem; transition: 0.2s; }
-    #submit-btn:hover { background: #fff; }
-    #submit-btn:disabled { background: #666; cursor: not-allowed; }
+    .submit-btn { background: #f3d163; font-weight: 600; cursor: pointer; color: #000; border: none; margin-top: 10px; font-size: 1rem; transition: 0.2s; }
+    .submit-btn:hover { background: #fff; }
+    .submit-btn:disabled { background: #666; cursor: not-allowed; }
 
     #cd-btn { background: transparent; border: 1px solid #f3d163; color: #f3d163; font-weight: 600; cursor: pointer; }
     #cd-btn:hover { background: rgba(243, 209, 99, 0.1); }
 
-    .wishes-list { max-height: 520px; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; padding-right: 4px; }
+    /* รายการการ์ดข้อความ */
+    .wishes-list { max-height: 480px; overflow-y: auto; display: flex; flex-direction: column; gap: 14px; padding-right: 4px; }
     .wish-item { background: rgba(0, 0, 0, 0.6); border: 1px solid rgba(243, 209, 99, 0.3); border-radius: 10px; padding: 14px; }
     .wish-item .sender { color: #f3d163; font-weight: 600; font-size: 0.95rem; margin-bottom: 6px; }
-    .wish-item .msg { font-size: 0.9rem; color: #eee; white-space: pre-line; word-break: break-word; margin-bottom: 8px; }
+    .wish-item .msg { font-size: 0.9rem; color: #eee; white-space: pre-line; word-break: break-word; }
     .wish-item img, .wish-item video { width: 100%; height: auto; display: block; border-radius: 8px; margin-top: 8px; border: 1px solid rgba(255, 255, 255, 0.1); }
+
+    /* รายการคิวเพลง */
+    .song-list { max-height: 480px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding-right: 4px; }
+    .song-card { 
+      background: rgba(0, 0, 0, 0.6); border: 1px solid rgba(243, 209, 99, 0.3); 
+      border-radius: 10px; padding: 12px 14px; display: flex; justify-content: space-between; align-items: center; 
+    }
+    .song-card-info { display: flex; flex-direction: column; gap: 2px; overflow: hidden; }
+    .song-card-title { color: #f3d163; font-weight: 600; font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .song-card-sender { font-size: 0.8rem; color: #aaa; }
+    .btn-delete-song { 
+      background: #ff4d4d; color: #fff; border: none; border-radius: 6px; 
+      padding: 6px 12px; font-size: 0.8rem; cursor: pointer; transition: 0.2s; width: auto; margin: 0; 
+    }
+    .btn-delete-song:hover { background: #ff0000; }
 
     .credit { text-align: center; margin-top: 20px; font-size: 0.8rem; color: #888; }
     .credit a { color: #f3d163; text-decoration: none; font-weight: 600; }
@@ -57,35 +74,62 @@
 </head>
 <body>
   <div class="form-box">
+    <!-- เมนูเปลี่ยนแท็บ -->
     <div class="tab-container">
-      <button type="button" class="tab-btn active" id="tab-upload-btn">ฝากข้อความ</button>
-      <button type="button" class="tab-btn" id="tab-view-btn">ดูข้อความทั้งหมด</button>
+      <button type="button" class="tab-btn active" id="tab-msg-btn">ฝากข้อความ/สื่อ</button>
+      <button type="button" class="tab-btn" id="tab-song-btn">ฝากเฉพาะเพลง</button>
+      <button type="button" class="tab-btn" id="tab-view-btn">ข้อความทั้งหมด</button>
+      <button type="button" class="tab-btn" id="tab-songs-list-btn">คิวเพลงทั้งหมด</button>
     </div>
 
-    <!-- แท็บ 1: ฟอร์มอัปโหลด -->
-    <div id="upload-tab" class="tab-content active">
-      <form id="upload-form">
-        <label for="user-name">ชื่อผู้ส่ง (ไม่บังคับ):</label>
-        <input type="text" id="user-name" placeholder="ใส่ชื่อของคุณ...">
+    <!-- แท็บ 1: ฝากข้อความ/สื่อ -->
+    <div id="msg-tab" class="tab-content active">
+      <form id="msg-form">
+        <label for="msg-user-name">ชื่อผู้ส่ง (ไม่บังคับ):</label>
+        <input type="text" id="msg-user-name" placeholder="ใส่ชื่อของคุณ...">
 
-        <label for="user-message">ข้อความอวยพร (ไม่บังคับ):</label>
-        <textarea id="user-message" rows="4" placeholder="พิมพ์ข้อความตรงนี้..."></textarea>
-        
+        <label for="user-message">ข้อความอวยพร:</label>
+        <textarea id="user-message" rows="3" placeholder="พิมพ์ข้อความตรงนี้..."></textarea>
+
         <label for="user-media">อัปโหลดรูปภาพหรือวิดีโอ (ไม่บังคับ):</label>
         <input type="file" id="user-media" accept="image/*,video/*">
         
-        <button type="submit" id="submit-btn">ส่งข้อมูล</button>
-        <button type="button" id="cd-btn">ไปหน้าเคาท์ดาวน์</button>
-        <div class="credit"><a>nincandy</a></div>
+        <button type="submit" class="submit-btn">ส่งข้อความ / สื่อ</button>
       </form>
     </div>
 
-    <!-- แท็บ 2: ดูข้อความทั้งหมด -->
+    <!-- แท็บ 2: ฝากเฉพาะเพลง -->
+    <div id="song-tab" class="tab-content">
+      <form id="song-form">
+        <label for="song-user-name">ชื่อผู้ส่ง (ไม่บังคับ):</label>
+        <input type="text" id="song-user-name" placeholder="ใส่ชื่อของคุณ...">
+
+        <label for="song-title">ชื่อเพลง (ไม่บังคับ):</label>
+        <input type="text" id="song-title" placeholder="ใส่ชื่อเพลง...">
+
+        <label for="song-url">ลิงก์เพลง YouTube / MP3:</label>
+        <input type="text" id="song-url" placeholder="https://www.youtube.com/watch?v=..." required>
+
+        <button type="submit" class="submit-btn">ส่งเพลงเข้าคิว</button>
+      </form>
+    </div>
+
+    <!-- แท็บ 3: รายการข้อความอวยพรทั้งหมด -->
     <div id="view-tab" class="tab-content">
       <div id="wishes-list" class="wishes-list">
         <p style="text-align:center; color:#aaa;">กำลังโหลดข้อมูล...</p>
       </div>
     </div>
+
+    <!-- แท็บ 4: รายการเพลงในคิวทั้งหมด -->
+    <div id="songs-list-tab" class="tab-content">
+      <div id="songs-list" class="song-list">
+        <p style="text-align:center; color:#aaa;">กำลังโหลดคิวเพลง...</p>
+      </div>
+    </div>
+
+    <button type="button" id="cd-btn" style="margin-top: 15px;">ไปหน้าเคาท์ดาวน์</button>
+    <div class="credit"><a>nincandy</a></div>
   </div>
 
   <script type="module" src="./upload.js"></script>
